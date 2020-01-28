@@ -1,7 +1,8 @@
-package s4.B193368; // Please modify to s4.Bnnnnnn, where nnnnnn is your student ID. 
+//2020/01/28
+package s4.B193368; // Please modify to s4.Bnnnnnn, where nnnnnn is your student ID.
 import java.lang.*;
 import s4.specification.*;
-
+import java.util.HashMap;
 /* What is imported from s4.specification
 package s4.specification;
 public interface InformationEstimatorInterface{
@@ -19,7 +20,8 @@ public class InformationEstimator implements InformationEstimatorInterface{
     // Code to tet, *warning: This code condtains intentional problem*
     byte [] myTarget; // data to compute its information quantity
     byte [] mySpace;  // Sample space to compute the probability
-    FrequencerInterface myFrequencer;  // Object for counting frequency
+    FrequencerInterface myFrequencer;  // Object for counting frequency頻度をカウントするためのオブジェクト
+    HashMap<String,Double> array;//Map
 
     byte [] subBytes(byte [] x, int start, int end) {
 	// corresponding to substring of String for  byte[] ,
@@ -35,9 +37,10 @@ public class InformationEstimator implements InformationEstimatorInterface{
     }
 
     public void setTarget(byte [] target) { myTarget = target;}
-    public void setSpace(byte []space) { 
+    public void setSpace(byte []space) {
 	myFrequencer = new Frequencer();
-	mySpace = space; myFrequencer.setSpace(space); 
+	mySpace = space; myFrequencer.setSpace(space);
+        array = new HashMap<String,Double>();//初期化
     }
 
     public double estimation(){
@@ -58,26 +61,31 @@ public class InformationEstimator implements InformationEstimatorInterface{
 	    }
 	    partition[myTarget.length] = true;
 
-	    // Compute Information Quantity for the partition, in "value1"
+	    // Compute Information Quantity for the partition, in "value1" value1の分割の情報量を計算
 	    // value1 = IQ(#"ab")+IQ(#"cde")+IQ(#"fg") for the above example
-            double value1 = (double) 0.0;
-	    int end = 0;;
+        double value1 = (double) 0.0;
+	    int end = 0;
 	    int start = end;
 	    while(start<myTarget.length) {
-		// System.out.write(myTarget[end]);
-		end++;;
+            // System.out.write(myTarget[end]);
+            end++;
 		while(partition[end] == false) { 
 		    // System.out.write(myTarget[end]);
 		    end++;
 		}
+        String target;
+        target = new String(subBytes(myTarget,start,end));
 		// System.out.print("("+start+","+end+")");
-		myFrequencer.setTarget(subBytes(myTarget, start, end));
-		value1 = value1 + iq(myFrequencer.frequency());
+            if(!array.containsKey(target)){//指定したキーが含まれていない場合
+                myFrequencer.setTarget(subBytes(myTarget, start, end));
+                array.put(target,iq(myFrequencer.frequency()));//targetとその情報量をリストに追加
+            }
+		value1 = value1 + array.get(target);//指定した文字の情報量をたす
 		start = end;
 	    }
 	    // System.out.println(" "+ value1);
 
-	    // Get the minimal value in "value"
+	    // Get the minimal value in "value"最小値を取得
 	    if(value1 < value) value = value1;
 	}
 	return value;
