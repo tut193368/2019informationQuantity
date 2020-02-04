@@ -90,6 +90,7 @@ public class Frequencer implements FrequencerInterface{
         }
         //                                            
         // ここに、int suffixArrayをソートするコードを書け。
+        /*バブルソートのfor文をクイックソートに書き換える
         for(int i=0;i<suffixArray.length-1;i++){
             for(int j=suffixArray.length-1;j>i;j--){
                 //if (suffixArray[j - 1] > suffixArray[j]) {
@@ -100,9 +101,33 @@ public class Frequencer implements FrequencerInterface{
                     suffixArray[j] = tmp;
                 }
             }
-        }
+        }*/
+        quick_sort(suffixArray, 0, suffixArray.length-1);
         // 　順番はsuffixCompareで定義されるものとする。    
     }
+    
+    public void quick_sort(int[] d, int left, int right){
+        if(left>=right){
+            return;
+        }
+        int p=left;
+        int l=left, r=right, tmp;
+        while(l<=r){
+            while(suffixCompare(d[l],d[p])==-1){
+                l++;
+            }
+            while(suffixCompare(d[r],d[p])==1){
+                r--;
+            }
+            if(l<=r){
+                tmp=d[l]; d[l]=d[r]; d[r]=tmp;
+                l++; r--;
+            }
+        }
+        quick_sort(d, left, r);//ピボットより左側をクイックソート
+        quick_sort(d, l, right);//ピボットより右側をクイックソート
+    }
+    
 
     // Suffix Arrayを用いて、文字列の頻度を求めるコード
     // ここから、指定する範囲のコードは変更してはならない。
