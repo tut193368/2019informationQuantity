@@ -1,4 +1,4 @@
-//2020/01/28
+//2020/02/18
 package s4.B193368; // Please modify to s4.Bnnnnnn, where nnnnnn is your student ID.
 import java.lang.*;
 import s4.specification.*;
@@ -21,7 +21,7 @@ public class InformationEstimator implements InformationEstimatorInterface{
     byte [] myTarget; // data to compute its information quantity
     byte [] mySpace;  // Sample space to compute the probability
     FrequencerInterface myFrequencer;  // Object for counting frequency頻度をカウントするためのオブジェクト
-    HashMap<String,Double> array;//Map
+    //HashMap<String,Double> array;//Map
 
     byte [] subBytes(byte [] x, int start, int end) {
 	// corresponding to substring of String for  byte[] ,
@@ -33,17 +33,34 @@ public class InformationEstimator implements InformationEstimatorInterface{
 
     // IQ: information quantity for a count,  -log2(count/sizeof(space))
     double iq(int freq) {
-	return  - Math.log10((double) freq / (double) mySpace.length)/ Math.log10((double) 2.0);
+        return  - Math.log10((double) freq / (double) mySpace.length)/ Math.log10((double) 2.0);
     }
 
     public void setTarget(byte [] target) { myTarget = target;}
     public void setSpace(byte []space) {
-	myFrequencer = new Frequencer();
-	mySpace = space; myFrequencer.setSpace(space);
-        array = new HashMap<String,Double>();//初期化
+        myFrequencer = new Frequencer();
+        mySpace = space; myFrequencer.setSpace(space);
+        //array = new HashMap<String,Double>();//初期化
     }
 
     public double estimation(){
+    double [] Iq = new double[myTarget.length];
+    double value1 = (double) 0.0;
+    for( int i = 0 ; i < myTarget.length ; i++ ){
+        for( int j = 0 ; j <= i ; j++ ){
+            if(j == 0){
+                myFrequencer.setTarget(subBytes(myTarget, j, i+1));
+                value1 = iq(myFrequencer.frequency());
+                Iq[i] = value1;
+            }else{
+                myFrequencer.setTarget(subBytes(myTarget, j, i+1));
+                value1 = Iq[j-1] + iq(myFrequencer.frequency());
+                if(Iq[i] > value1) Iq[i] = value1;
+            }
+        }
+    }
+    return Iq[myTarget.length-1];
+    /*
 	boolean [] partition = new boolean[myTarget.length+1];
 	int np;
 	np = 1<<(myTarget.length-1);
@@ -88,26 +105,26 @@ public class InformationEstimator implements InformationEstimatorInterface{
 	    // Get the minimal value in "value"最小値を取得
 	    if(value1 < value) value = value1;
 	}
-	return value;
+	return value;*/
     }
 
     public static void main(String[] args) {
-	InformationEstimator myObject;
-	double value;
-	myObject = new InformationEstimator();
-	myObject.setSpace("3210321001230123".getBytes());
-	myObject.setTarget("0".getBytes());
-	value = myObject.estimation();
-	System.out.println(">0 "+value);
-	myObject.setTarget("01".getBytes());
-	value = myObject.estimation();
-	System.out.println(">01 "+value);
-	myObject.setTarget("0123".getBytes());
-	value = myObject.estimation();
-	System.out.println(">0123 "+value);
-	myObject.setTarget("00".getBytes());
-	value = myObject.estimation();
-	System.out.println(">00 "+value);
+        InformationEstimator myObject;
+        double value;
+        myObject = new InformationEstimator();
+        myObject.setSpace("3210321001230123".getBytes());
+        myObject.setTarget("0".getBytes());
+        value = myObject.estimation();
+        System.out.println(">0 "+value);
+        myObject.setTarget("01".getBytes());
+        value = myObject.estimation();
+        System.out.println(">01 "+value);
+        myObject.setTarget("0123".getBytes());
+        value = myObject.estimation();
+        System.out.println(">0123 "+value);
+        myObject.setTarget("00".getBytes());
+        value = myObject.estimation();
+        System.out.println(">00 "+value);
     }
 }
 				  
