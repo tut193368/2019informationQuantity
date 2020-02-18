@@ -1,4 +1,4 @@
-//2020/02/18ß
+//2020/02/18
 package s4.B193368;
 import java.lang.*;
 import s4.specification.*;
